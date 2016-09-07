@@ -544,5 +544,6 @@ x = SecurityInfo(name="YELP", start="2009-06-06", end="2016-06-06", period="week
 markov_df = get_data(x)
 
 print(markov_df)
+
 matrix = percent_change_prob_3x3(markov_df, x, lower_thresh=-3, upper_thresh=3)
 rand_walk_3x3_markov(markov_df, matrix, x, lower_thresh=-3, upper_thresh=3)
