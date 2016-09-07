@@ -365,7 +365,7 @@ def prob_from_bins(heights, bins):
     return rand_pct_change
 
 
-def rand_walk_2x2_markov(adjusted_df, prob_list, security, num_bins=10, threshold=0.0, start=2099.0, num_periods=12):
+def rand_walk_2x2_markov(adjusted_df, prob_list, security, num_bins=10, threshold=0.0, num_periods=12):
     """
     Divides the per
 
@@ -389,6 +389,7 @@ def rand_walk_2x2_markov(adjusted_df, prob_list, security, num_bins=10, threshol
     # percentage change of the previous period
     pct_change_list = []
     all_walks = []  # will hold all the random walk data
+    start=getLastClosingDate(adjusted_df)
     for i in range(100):
         mean, std = get_params_for_norm_dist(adjusted_df)
         first_pct_change = np.random.normal(mean, std)
