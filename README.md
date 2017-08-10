@@ -1,2 +1,8 @@
 # markov_stock_analysis
-# markov_stock_analysis
+The program implements an algorithm that finds the percentage change in a security based on historical daily data from Yahoo Finance and visualizes the information as a time series plot in matplotlib. The program also creates a Markov chain model in which the states are bull market, bear market, and stagnant market. Using the probabilities associated with this Markov chain model, the program will model the estimated growth of the security price through a Gaussian random walk.
+
+The real purpose of the program is not to accurately predict the growth or fall fall of a security price. Instead, the program serves as a simple simulation to study finite markov chain model behavior in an applied context. Currently, I occasionally use the program as a research tool to study the long and short term behavior of individual securities and indices using experimental markov models. 
+
+The current problem I face is that I assumed, for simplicity, that the historical percentage price changes are all normally distributed with a definite mean and standard deviation. My shifts from one state to another are heavily dependent on this not-so-normal price change distribution. Of course, this assumption is most likely not necessarily true; in my Gaussian walk, we cannot assume that the pricing changes are even approximately normal because the data is NOT identically and independently distributed. 
+
+To resolve the faulty assumption, the next steps in the model would be to use a nonparametric distribution to model the steps in my random walk. A nonparametric distribution would not have any mean, standard distribution, etc. I would probably get a more realistic model if I used one, and I would not need to worry about too many assumptions. Once I am very familiar with the details and theory on nonparametric statistics will I resolve this issue. 

@@ -11,7 +11,6 @@ security price through a random walk. This program can be used as a tool to anal
 indexes, as well as study the state of the market for a wide number of applications including options and technical
 analysis.
 
-The next step would be to include other newer variables like seasonality and organize/clean the code using OOP concepts.
 
 """
 import datetime as dt
@@ -21,6 +20,7 @@ from matplotlib.ticker import MultipleLocator
 import matplotlib.mlab as mlab
 import numpy as np
 import pandas_datareader.data as web
+import sys
 
 
 class SecurityInfo:
@@ -74,7 +74,7 @@ class SecurityInfo:
 
 def get_data(security):
     """
-    This function obtains data under certain parameters from Quandl and returns the following information as a Pandas
+    This function obtains data through an API called pandas_datareader and returns the following information as a Pandas
     DataFrame: date, adjusted closing, and percentage change in adjusted closing from the last week.
 
     :param security: <SecurityInfo class> Holds information about the requested security
@@ -83,7 +83,11 @@ def get_data(security):
     name = security.get_name()
     start = security.get_start()
     end = security.get_end()
-    raw_df = web.DataReader(name, 'yahoo', start, end)
+    try:
+        raw_df = web.DataReader(name, 'yahoo', start, end)
+    except Exception as e:
+        print(e)
+        sys.exit(1)
     adjusted_df = raw_df.ix[:, ['Adj Close']]
     adjusted_df["Percentage Change"] = adjusted_df['Adj Close'].pct_change() * 100
     return adjusted_df
@@ -298,14 +302,14 @@ def percent_change_prob_3x3(adjusted_df, security, lower_thresh=-1.0, upper_thre
 
 def random_walk_norm_pdf(adjusted_df, num_periods=12):
     """
-    This function calculates and visualizes a random walk assuming that S&P 500 data are independent of current state.
-    Based on a basic normal distribution and a starting point, the function will predict the S&P 500
+    This function calculates and visualizes a random walk assuming that security price data are independent of current state.
+    Based on a basic normal distribution and a starting point, the function will predict the security price
     Index movement for a finite number of periods. This is the most fundamental random walk and has many unrealistic
-    assumptions, such as the data are independently and identically distributed, which is likely not true for the
+    assumptions, such as the data are independently and identically distributed, which is very likely not true for the
     S&P500 Index.
 
     :param adjusted_df: <DataFrame> Pandas DataFrame with columns: Date, Adj Close, and Percentage Change.
-    :param start: <float> starting value for S&P 500 random walk
+    :param start: <float> starting value for security price random walk
     :param num_periods: <int> number of steps in the random walk process
 
     """
@@ -349,7 +353,7 @@ def prob_from_bins(heights, bins):
 
 def rand_walk_2x2_markov(adjusted_df, prob_list, security, num_bins=10, threshold=0.0, num_periods=12):
     """
-    Divides the per
+ 
 
     :param adjusted_df: <DataFrame> Pandas DataFrame with columns: Date, Adj Close, and Percentage Change.
     :param prob_list: <list> Contains a 2x2 list that holds the probabilities from a Markov chain with two states
@@ -357,7 +361,7 @@ def rand_walk_2x2_markov(adjusted_df, prob_list, security, num_bins=10, threshol
     :param num_bins: <int> Specifies number of bins in the histogram distribution. The more bins, the more realistic
                             the probability distribution will be
     :param threshold: <float> Represents the level dividing events A (change >= threshold) & B (change < threshold)
-    :param start: <float> starting value for S&P 500 random walk
+    :param start: <float> starting value for security price random walk
     :param num_periods: <int> number of steps in the random walk process
     """
 
@@ -420,7 +424,7 @@ def rand_walk_3x3_markov(adjusted_df, prob_list, security, num_bins=10, lower_th
     pct change < upper thresh)
     :param upper_thresh: <float> Represents the level dividing events B (lower thresh < pct change < upper thresh) &
     C(upper thresh < pct change)
-    :param start: <float> starting value for S&P 500 random walk
+    :param start: <float> starting value for security price random walk
     :param num_periods: <int> number of steps in the random walk process
     """
 
@@ -523,10 +527,13 @@ def show_rand_walks(all_walks, security):
     plt.show()
 
 
-x = SecurityInfo(name="GOOG", start="2012-08-09", end="2017-08-09")
-markov_df = get_data(x)
+def main():
+    security = SecurityInfo(name="ORBK", start="2000-03-10", end="2003-03-10")
+    markov_df = get_data(security)
 
-print(markov_df)
+    matrix = percent_change_prob_3x3(markov_df, security, lower_thresh=-1, upper_thresh=1)
+    
+    rand_walk_3x3_markov(markov_df, matrix, security, lower_thresh=-1, upper_thresh=1)
 
-matrix = percent_change_prob_3x3(markov_df, x, lower_thresh=-3, upper_thresh=3)
-rand_walk_3x3_markov(markov_df, matrix, x, lower_thresh=-3, upper_thresh=3)
+if __name__ == '__main__':
+    main()

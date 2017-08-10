@@ -1,6 +1,6 @@
 """
 @author: Nikhil Bhaip
-@version: 2.3
+@version: 2.5
 @since: 6/15/16
 
 The markov_stock analysis program implements an algorithm that finds the percentage change in a security based on
@@ -21,6 +21,7 @@ from matplotlib.ticker import MultipleLocator
 import matplotlib.mlab as mlab
 import numpy as np
 import quandl
+
 
 
 class SecurityInfo:
